@@ -42,6 +42,7 @@ const translations = {
     emptyText: "املأ النموذج واضغط على زر التوليد لإنشاء ملفاتك.",
     copy: "نسخ النص",
     copied: "تم النسخ!",
+    btnDownload: "تحميل الملف",
     apkAlert: "جارٍ تجهيز ملف APK... ستتوفر النسخة قريباً!",
     footer: "تم التطوير بواسطة © 2025 Islam Hamdy – Nakamoko Systems"
   },
@@ -83,6 +84,7 @@ const translations = {
     emptyText: "Fill the form and click Generate to create your files.",
     copy: "Copy Text",
     copied: "Copied!",
+    btnDownload: "Download File",
     apkAlert: "Preparing APK file... Version coming soon!",
     footer: "Developed by © 2025 Islam Hamdy – Nakamoko Systems"
   }
@@ -183,11 +185,11 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [language, setLanguage] = useState<Language>('ar');
   const [formData, setFormData] = useState<FormData>({
-    projectName: '',
-    projectDescription: '',
+    projectName: 'Nakamoko Systems',
+    projectDescription: 'Automated digital platforms for startups and communities.',
     projectType: ProjectType.OPEN_SOURCE,
-    licenseType: LicenseType.CC_BY_SA_4,
-    authorName: '',
+    licenseType: LicenseType.MIT,
+    authorName: 'Islam Hamdy – Nakamoko Systems',
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GeneratedDocs | null>(null);
@@ -252,6 +254,21 @@ export default function App() {
     navigator.clipboard.writeText(content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    if (!result) return;
+    const content = activeTab === 'license' ? result.licenseContent : result.readmeContent;
+    const filename = activeTab === 'license' ? 'LICENSE' : 'README.md';
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const handleDownloadApk = () => {
@@ -483,7 +500,14 @@ export default function App() {
                 {/* Content Area */}
                 <div className="flex-grow p-0 relative overflow-hidden flex flex-col">
                   {/* Toolbar */}
-                  <div className={`absolute top-4 ${language === 'ar' ? 'left-4' : 'right-4'} z-10`}>
+                  <div className={`absolute top-4 ${language === 'ar' ? 'left-4' : 'right-4'} z-10 flex gap-2`}>
+                     <button
+                      onClick={handleDownload}
+                      className="flex items-center gap-2 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 shadow-sm px-3 py-1.5 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                    >
+                      <DownloadIcon />
+                      {t.btnDownload}
+                    </button>
                     <button
                       onClick={handleCopy}
                       className="flex items-center gap-2 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 shadow-sm px-3 py-1.5 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
